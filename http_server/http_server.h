@@ -8,6 +8,21 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <signal.h>
+#include <unistd.h>
+
+
+int cd=0;
+int ld=0;
+
+static void handler(int signo) {
+    //if(cd!=-1)
+    {
+    //    close(cd);
+    }
+   // close(ld);
+    printf("Server was closed by system signal.\n");
+}
+
 
 void headers(int client, int size, int httpcode, char* contentType) {
     char buf[1024];
@@ -42,15 +57,15 @@ void headers(int client, int size, int httpcode, char* contentType) {
     strcpy(buf, "\r\n");
     send(client, buf, strlen(buf), 0);
 
-    sprintf(buf, "Content-Type:");
-    send(client, buf, strlen(buf), 0);
-    strcpy(buf, contentType);
-    send(client, buf, strlen(buf), 0);
-    strcpy(buf, "\r\n");
-    send(client, buf, strlen(buf), 0);
+    //sprintf(buf, "Content-Type:");
+    //send(client, buf, strlen(buf), 0);
+    //strcpy(buf, contentType);
+    //send(client, buf, strlen(buf), 0);
+    //strcpy(buf, "\r\n");
+    //send(client, buf, strlen(buf), 0);
 
-    strcpy(buf, "\r\n");
-    send(client, buf, strlen(buf), 0);
+   // strcpy(buf, "\r\n");
+    //send(client, buf, strlen(buf), 0);
 }
 
 
@@ -80,25 +95,22 @@ void getContentType(char *filePath, char** contentType) {
     {
         i++;
         memcpy(subbuff, &filePath[i], n-i);
-        //subbuff[n-i] = '\0';
+        subbuff[n-i] = '\0';
         if (strstr(subbuff,"png")!=NULL)
         {
             char s[20] = "image/png";
-            //strcat(s, subbuff);
-            *contentType=s;//"image.png";
+            *contentType=s;
             return;
         }
         else if (strstr(subbuff,"jpg")!=NULL)
         {
             char s[20] = "image/jpg";
-            //strcat(s, subbuff);
             *contentType=s;
             return;
         }
         else if (strstr(subbuff,"pdf")!=NULL)
         {
             char s[20] = "application/pdf";
-            //strcat(s, subbuff);
             *contentType=s;
             return;
         }
@@ -108,18 +120,13 @@ void getContentType(char *filePath, char** contentType) {
 }
 
 
-void handler(int a)
-{
-    exit(0);
-}
-
 int startServer()
 {
     printf("server started\n");
+    signal(SIGKILL,handler);
     signal(SIGINT,handler);
-    int ld = 0;
+    signal(SIGTERM,handler);
     int res = 0;
-    int cd = 0;
     int filesize = 0;
     const int backlog = 10;
     struct sockaddr_in saddr;
@@ -138,12 +145,14 @@ int startServer()
     if (ld == -1) {
         printf("listener create error \n");
     }
+
     saddr.sin_family = AF_INET;
     saddr.sin_port = htons(8080);
     saddr.sin_addr.s_addr = INADDR_ANY;
     res = bind(ld, (struct sockaddr *)&saddr, sizeof(saddr));
     if (res == -1) {
         printf("bind error \n");
+        return 0;
     }
     res = listen(ld, backlog);
     if (res == -1) {
@@ -198,8 +207,9 @@ int startServer()
                 }
                 fclose(f);
             }
-            //close(cd);
+            close(cd);
         }
     }
+    close(ld);
     return 0;
 }

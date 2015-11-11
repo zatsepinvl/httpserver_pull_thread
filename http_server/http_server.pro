@@ -8,7 +8,7 @@ QT       += core
 
 QT       -= gui
 
-TARGET = http_server
+TARGET = http_server_thread_pool
 CONFIG   += console
 CONFIG   -= app_bundle
 
