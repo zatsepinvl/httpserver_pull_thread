@@ -225,19 +225,19 @@ int startServer()
         cqueue[i]=0;
     }
     threadPool=new pthread_t[thread_pool_size];
-    //for(int i=0; i<thread_pool_size; i++)
+    int *thread_pool_id=new int[thread_pool_size];
+    for(int i=0; i<thread_pool_size; i++)
     {
-        //int j=i;
-        int i1=0;
-        pthread_create(&threadPool[0], NULL, thread_work, &i1);
-        int i2=1;
+        thread_pool_id[i]=i+1;
+        pthread_create(&threadPool[0], NULL, thread_work, &thread_pool_id[i]);
+       /* int i2=1;
         pthread_create(&threadPool[1], NULL, thread_work, &i2);
         int i3=2;
         pthread_create(&threadPool[2], NULL, thread_work, &i3);
         int i4=3;
         pthread_create(&threadPool[3], NULL, thread_work, &i4);
         int i5=4;
-        pthread_create(&threadPool[4], NULL, thread_work, &i5);
+        pthread_create(&threadPool[4], NULL, thread_work, &i5);*/
     }
     const int backlog = 10;
     struct sockaddr_in saddr;

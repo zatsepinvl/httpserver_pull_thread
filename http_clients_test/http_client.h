@@ -16,11 +16,12 @@
 #define MAXBUF  1024
 
 char* server_address="127.0.0.1";
-char* request="/file.pdf";
+char* request="/test.pdf";
 int port=8080;
 
 int http_client_start()
 {
+    printf("_CLIENT_START_\n");
     int sock, bytes_read;
     struct sockaddr_in dest;
     char buffer[MAXBUF];
@@ -47,18 +48,18 @@ int http_client_start()
         bytes_read = recv(sock, buffer, sizeof(buffer), 0);
         if ( bytes_read > 0 )
         {
-           // printf("%s", buffer);
+            //printf("%s", buffer);
             ok=true;
         }
     }
     while ( bytes_read > 0 );
     if(ok)
     {
-        printf("done\n");
+        printf("__DONE__\n\n");
     }
     else
     {
-        printf("error\n");
+        printf("__ERROR__\n");
     }
     /*---Clean up---*/
     close(sock);
